@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharSyncPlugin", "CharSyncPlugin\CharSyncPlugin.csproj", "{BB916647-2A5E-46AB-B1C6-7BCBEBD70EE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB916647-2A5E-46AB-B1C6-7BCBEBD70EE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB916647-2A5E-46AB-B1C6-7BCBEBD70EE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB916647-2A5E-46AB-B1C6-7BCBEBD70EE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB916647-2A5E-46AB-B1C6-7BCBEBD70EE8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8DD0EC91-58FE-416C-B43E-9C5F6D7F0484}
+	EndGlobalSection
+EndGlobal
