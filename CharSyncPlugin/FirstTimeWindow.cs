@@ -26,7 +26,7 @@ namespace CharSync
 
             ImGui.SetNextWindowSize(new(400, 600));
             ImGui.SetNextWindowSizeConstraints(new(400, 600), new(int.MaxValue, int.MaxValue));
-            if (ImGui.Begin("CharSync Instructions"))
+            if (ImGui.Begin("CharSync Instructions", ref this.IsVisible))
             {
                 ImGui.TextUnformatted("Welcome to CharSync");
 
