@@ -1,0 +1,2 @@
+# CharSyncPlugin
+Character Data Synchronization
