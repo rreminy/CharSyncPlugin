@@ -24,7 +24,7 @@ namespace CharSync
         {
             if (!this.IsVisible) return;
 
-            ImGui.SetNextWindowSize(new(400, 600));
+            ImGui.SetNextWindowSize(new(400, 600), ImGuiCond.FirstUseEver);
             ImGui.SetNextWindowSizeConstraints(new(400, 600), new(int.MaxValue, int.MaxValue));
             if (ImGui.Begin("CharSync Instructions", ref this.IsVisible))
             {
@@ -44,7 +44,15 @@ namespace CharSync
 
                 ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.0f, 1.0f, 0.0f, 1.0f));
                 ImGui.TextWrapped("Be sure to follow the instructions above correctly, failure to do so may result in overwritten data! Plugin is disabled by default to avoid this from happening.");
+                ImGui.TextWrapped("You can click here to perform a backup.");
                 ImGui.PopStyleColor();
+
+                if (ImGui.Button("Perform Backup"))
+                {
+                    Task.Factory.StartNew(this.Plugin.PerformBackup, TaskCreationOptions.LongRunning);
+                }
+                ImGui.SameLine();
+                ImGui.TextWrapped(this.Plugin.BackupProgress);
 
                 ImGui.Spacing();
                 ImGui.Spacing();

@@ -10,6 +10,9 @@ using System.IO;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Command;
+using System.IO.Compression;
+using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace CharSync
 {
@@ -133,6 +136,64 @@ namespace CharSync
                 if (group.CardSets) File.Copy(GetFilePath(from, "GS.DAT"), GetFilePath(to, "GS.DAT"), true);
             }
         }
+
+        #region Backup Implementation
+        private static Regex DirNameRegex = new("^FFXIV_CHR[0-9A-Z]{16}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        private static Regex FileNameRegex = new(@"^[A-Z]*\.DAT$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        private int backupLock; // Simple Lock (Interlocked)
+        public string BackupProgress { get; private set; } = string.Empty;
+
+        /// <summary>
+        /// Performs a backup of all character data
+        /// </summary>
+        public void PerformBackup()
+        {
+            if (Interlocked.Exchange(ref this.backupLock, 1) == 1) return;
+            try
+            {
+                var dtString = DateTime.Now.ToString("s")
+                    .Replace("-", "", StringComparison.InvariantCulture)
+                    .Replace("T", "-", StringComparison.InvariantCulture)
+                    .Replace(":", "", StringComparison.InvariantCulture);
+                var archivePath = Path.Join(GetGameDataDirectory(), $"CharSync-{dtString}-Backup.zip");
+
+                using var fileStream = new FileStream(archivePath, FileMode.CreateNew);
+                using var archive = new ZipArchive(fileStream, ZipArchiveMode.Create);
+
+                var dataDir = new DirectoryInfo(GetGameDataDirectory());
+                var directories = dataDir.EnumerateDirectories("FFXIV_CHR*")
+                    .Where(d => DirNameRegex.IsMatch(d.Name))
+                    .ToList(); // Done to be able to .Count
+
+                var count = 0;
+                foreach (var directory in directories)
+                {
+                    this.BackupProgress = $"Creating Backup...{100 * ++count / directories.Count}%";
+                    var files = directory.EnumerateFiles()
+                        .Where(f => FileNameRegex.IsMatch(f.Name));
+
+                    foreach (var file in files)
+                    {
+                        var archiveFilePath = Path.Join(directory.Name, file.Name);
+                        var realFilePath = Path.Join(directory.FullName, file.Name);
+                        PluginLog.LogVerbose($"Backing up {archiveFilePath}");
+                        archive.CreateEntryFromFile(realFilePath, archiveFilePath, CompressionLevel.Optimal);
+                    }
+                }
+
+                this.BackupProgress = $"Backup Created: {archivePath}";
+            }
+            catch (Exception ex)
+            {
+                this.BackupProgress = $"Exception caught: {ex.Message}";
+                PluginLog.LogError(ex, string.Empty);
+            }
+            finally
+            {
+                this.backupLock = 0; // No interlock needed
+            }
+        }
+        #endregion
 
         public void Dispose()
         {
